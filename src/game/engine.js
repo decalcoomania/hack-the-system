@@ -1,7 +1,6 @@
-// Базовий початковий стан гри
 export const getInitialGameState = () => ({
   currentMission: 1,
-  currentServer: null, // null = NEXUS Terminal
+  currentServer: null,
   accessLevel: "NEXUS",
   authenticatedUser: null,
   detection: 20,
@@ -12,11 +11,12 @@ export const getInitialGameState = () => ({
     { text: "", type: "system" },
     { text: "Type 'help' to see available commands.", type: "system" }
   ],
-  gameStatus: "PLAYING", // PLAYING, VICTORY, FAILED
+  gameStatus: "PLAYING",
   dataDownloaded: false,
   logsCleared: false,
   foundTargetUser: false,
   server04Unlocked: false,
+  data17Decrypted: false // Прапор перевірки розшифрування
 });
 
 const VIRTUAL_NETWORK = {
@@ -101,16 +101,6 @@ export function processCommand(input, state) {
   }
 
   switch (cmd) {
-    case "gattouz":
-        responseLines = [
-            "--------------------------------------------------",
-            "REDIRECTING TO EXTERNAL LINK...",
-            "ACCESSING SECRET REPOSITORY...",
-            "--------------------------------------------------"
-        ];
-        newState.redirectUrl = "https://rt.pornhub.com/model/gattouz0"; // Замініть на потрібне вам посилання!
-        break;
-
     case "help":
       responseLines = [
         "AVAILABLE COMMANDS:",
@@ -193,7 +183,6 @@ export function processCommand(input, state) {
         } else if (VIRTUAL_NETWORK[target]) {
           const srv = VIRTUAL_NETWORK[target];
 
-          // Перевірка 1: Чи заблоковано SERVER-04
           if (target === "SERVER-04" && !newState.server04Unlocked) {
             detectionDelta += 10;
             responseLines = [
@@ -202,14 +191,10 @@ export function processCommand(input, state) {
               "ACCESS PORT AUTHORIZATION REQUIRED.",
               "HINT: Check database notes on SERVER-03 for the required port."
             ];
-          } 
-          // Перевірка 2: Потрібен рівень доступу EMPLOYEE
-          else if (srv.accessLevel === "EMPLOYEE" && newState.accessLevel !== "EMPLOYEE") {
+          } else if (srv.accessLevel === "EMPLOYEE" && newState.accessLevel !== "EMPLOYEE") {
             detectionDelta += 10;
             responseLines = ["ACCESS DENIED.", "EMPLOYEE CREDENTIALS REQUIRED."];
-          } 
-          // Успішне підключення
-          else {
+          } else {
             newState.currentServer = target;
             responseLines = [
               "CONNECTING...",
@@ -390,14 +375,14 @@ export function processCommand(input, state) {
       } else {
         const fileToDecrypt = args[0].toLowerCase();
         if (fileToDecrypt === "data_17.enc") {
+          newState.data17Decrypted = true; // Фіксуємо розшифрування
           responseLines = [
             "DECRYPTION SUCCESSFUL.",
             "FILE ID: DATA-17",
             "OWNER: operator_17",
-            "PROJECT DATA FOUND.",
-            "PROJECT: PROJECT_NOVA",
+            "PROJECT DATA UNLOCKED: PROJECT_NOVA",
             "CLASSIFICATION: CONFIDENTIAL",
-            "STATUS: VERIFIED"
+            "STATUS: READY FOR EXTRACTION"
           ];
         } else {
           detectionDelta += 5;
@@ -415,6 +400,13 @@ export function processCommand(input, state) {
         responseLines = ["Usage: download <filename>"];
       } else if (newState.currentServer !== "SERVER-04" || args[0].toLowerCase() !== "data_17.enc") {
         responseLines = ["FILE NOT FOUND OR ACCESS RESTRICTED."];
+      } else if (!newState.data17Decrypted) { // ПЕРЕВІРКА: чи розшифровано файл
+        detectionDelta += 10;
+        responseLines = [
+          "DOWNLOAD FAILED.",
+          "ERROR: FILE IS ENCRYPTED.",
+          "YOU MUST DECRYPT 'data_17.enc' BEFORE DOWNLOADING!"
+        ];
       } else {
         detectionDelta += 23;
         newState.dataDownloaded = true;
@@ -451,6 +443,16 @@ export function processCommand(input, state) {
           "DETECTION REDUCED BY 10%"
         ];
       }
+      break;
+
+    case "gattouz":
+      responseLines = [
+        "--------------------------------------------------",
+        "REDIRECTING TO EXTERNAL LINK...",
+        "ACCESSING SECRET REPOSITORY...",
+        "--------------------------------------------------"
+      ];
+      newState.redirectUrl = "https://google.com";
       break;
 
     case "exit":

@@ -10,9 +10,8 @@ import securityImg from "../assets/security-icon.png";
 import { getInitialGameState, processCommand } from "../game/engine";
 import { soundFx } from "../game/audio";
 
-const BACKEND_URL = "https://nexus-os-backend-wft7.onrender.com/"; // Змініть на свій Render URL при деплої
+const BACKEND_URL = "https://nexus-os-backend.onrender.com"; // Вкажіть свій Render URL
 
-// Файли для вікна Files (з твоїми посиланнями)
 const NEXUS_FILES = [
   { name: "github_profile.url", label: "GitHub Repository", url: "https://github.com" },
   { name: "linkedin_profile.url", label: "LinkedIn Contact", url: "https://linkedin.com" },
@@ -24,8 +23,11 @@ function Desktop() {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [networkOpen, setNetworkOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
+  
+  // Стан підказок
+  const [hintOpen, setHintOpen] = useState(false);
+  const [showCmdHint, setShowCmdHint] = useState(false); // Прихований натяк на команди
 
-  // 1. Автоматичне збереження прогресу
   const [gameState, setGameState] = useState(() => {
     const saved = localStorage.getItem("nexus_game_state");
     if (saved) {
@@ -42,7 +44,6 @@ function Desktop() {
 
   const terminalEndRef = useRef(null);
 
-  // Збереження прогресу в LocalStorage
   useEffect(() => {
     localStorage.setItem("nexus_game_state", JSON.stringify(gameState));
   }, [gameState]);
@@ -53,7 +54,72 @@ function Desktop() {
     }
   }, [gameState.history, terminalOpen]);
 
-  // Завантаження лідерборду для Network
+  // ДВОХРІВНЕВА СИСТЕМА ПІДКАЗОК
+  const getCurrentHint = () => {
+    if (!terminalOpen && !gameState.currentServer) {
+      return {
+        title: "ІНІЦІАЛІЗАЦІЯ СИСТЕМИ",
+        sequence: "Відкрити термінал ➔ Оглянути мережу ➔ Підключитись до шлюзу",
+        cmdHint: "Відкрийте іконку Terminal. Спочатку використайте команду 'scan', а потім підключіться: 'connect CC-GATEWAY'."
+      };
+    }
+
+    if (!gameState.currentServer) {
+      return {
+        title: "ВХІД У МЕРЕЖУ",
+        sequence: "Пошук доступних вузлів ➔ Підключення до точки входу",
+        cmdHint: "Введіть команду 'scan' у терміналі, а потім виконайте 'connect CC-GATEWAY'."
+      };
+    }
+
+    if (gameState.currentServer === "CC-GATEWAY") {
+      return {
+        title: "СКАНУВАННЯ CYBERCORE",
+        sequence: "Сканування мережі сервера ➔ Підключення до першого сервера",
+        cmdHint: "Використайте команду 'scan', після чого підключіться: 'connect SERVER-01'."
+      };
+    }
+
+    switch (gameState.currentMission) {
+      case 1:
+        return {
+          title: "МІСІЯ 01 — ПОШУК ПІДОЗРЮВАНОГО",
+          sequence: "Огляд файлової системи ➔ Читання списків та нотаток ➔ Вирахування оператора",
+          cmdHint: "Перевірте доступні файли через 'ls'. Уважно прочитайте 'cat employees.txt' та 'cat notes.txt', щоб знайти ім'я підозрілого співробітника (operator_17)."
+        };
+      case 2:
+        return {
+          title: "МІСІЯ 02 — ОТРИМАННЯ ДОСТУПУ",
+          sequence: "Перехід на SERVER-02 ➔ Пошук референсу ➔ Зчитування правила ➔ Вхід під користувачем ➔ Передача пароля",
+          cmdHint: "Виконайте 'connect SERVER-02'. Прочитайте 'employees.db' (знайдіть NEX-7241) та 'security_report.txt'. Замініть NEX- на ACCESS- (пароль: ACCESS-7241). Запустіть вхід 'login operator_17', а потім підтвердіть через 'pass ACCESS-7241'."
+        };
+      case 3:
+        return {
+          title: "МІСІЯ 03 — РОЗБЛОКУВАННЯ ПОРТУ",
+          sequence: "Перехід на SERVER-03 ➔ Пошук номера порту ➔ Авторизація порту ➔ Вхід на SERVER-04",
+          cmdHint: "Перейдіть на 'connect SERVER-03'. Прочитайте 'database_notes.txt', знайдіть порт 'PORT-8443' і розблокуйте його: 'unlock PORT-8443'. Після цього виконайте 'connect SERVER-04'."
+        };
+      case 4:
+        return {
+          title: "МІСІЯ 04 — ВИКРАДЕННЯ ДАНИХ",
+          sequence: "Перегляд історії ➔ Пошук .enc файла ➔ Розшифрування ➔ Викрадення на ПК",
+          cmdHint: "Прочитайте 'access_history.txt' для виявлення 'data_17.enc'. Спочатку зніміть захист командою 'decrypt data_17.enc', а вже потім викачайте файл через 'download data_17.enc'."
+        };
+      case 5:
+        return {
+          title: "МІСІЯ 05 — ВТЕЧА ТА ЗНИЩЕННЯ СЛІДІВ",
+          sequence: "Знищення слідів (-10% Detection) ➔ Відключення від сервера ➔ Завершення сесії",
+          cmdHint: "Негайно очистіть логи командою 'clear_logs'. Потім від'єднайтеся через 'disconnect' і завершіть роботу командою 'exit'."
+        };
+      default:
+        return {
+          title: "ПОРАДА АГЕНТУ",
+          sequence: "Перегляд інструкцій ➔ Виконання команд",
+          cmdHint: "Введіть команду 'help' у терміналі для перегляду списку всіх утиліт."
+        };
+    }
+  };
+
   const fetchLeaderboard = async () => {
     setLoadingLeaderboard(true);
     try {
@@ -74,7 +140,7 @@ function Desktop() {
 
   const handleInputChange = (e) => {
     setInputVal(e.target.value);
-    soundFx.playKeyPress(); // Звук при кожному натисканні клавіші
+    soundFx.playKeyPress();
   };
 
   const handleKeyDown = (e) => {
@@ -85,9 +151,7 @@ function Desktop() {
       const prevDet = gameState.detection;
       const updated = processCommand(inputVal, gameState);
 
-      // Якщо зросла тривога
       if (updated.detection > prevDet) soundFx.playAlert();
-      // Якщо команда видала помилку
       const lastHist = updated.history[updated.history.length - 1];
       if (lastHist && lastHist.type === "error") soundFx.playError();
 
@@ -129,6 +193,8 @@ function Desktop() {
     }
   };
 
+  const activeHint = getCurrentHint();
+
   return (
     <div
       className={`desktop ${gameState.detection >= 80 ? "glitch-alert" : ""}`}
@@ -165,13 +231,11 @@ function Desktop() {
           <span className="shortcut-label">Terminal</span>
         </button>
 
-        {/* FILES ICON */}
         <button className="desktop-shortcut" onClick={() => setFilesOpen(true)}>
           <img src={filesImg} alt="Files" className="shortcut-img" />
           <span className="shortcut-label">Files</span>
         </button>
 
-        {/* NETWORK ICON (LEADERBOARD) */}
         <button className="desktop-shortcut" onClick={handleOpenNetwork}>
           <img src={networkImg} alt="Network" className="shortcut-img" />
           <span className="shortcut-label">Network</span>
@@ -182,6 +246,55 @@ function Desktop() {
           <span className="shortcut-label">Security</span>
         </button>
       </div>
+
+      {/* КНОПКА-ЛАМПОЧКА (ПІДКАЗКА) */}
+      <button 
+        className="hint-fab-btn" 
+        onClick={() => {
+          setHintOpen(true);
+          setShowCmdHint(false); // Скидаємо відкритий натяк при новому відкритті
+        }} 
+        title="Підказка по місії"
+      >
+        💡
+      </button>
+
+      {/* МОДАЛЬНЕ ВІКНО ДВОХРІВНЕВОЇ ПІДКАЗКИ */}
+      {hintOpen && (
+        <div className="game-modal-overlay" onClick={() => setHintOpen(false)}>
+          <div className="game-modal hint-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="hint-header">
+              <h3>💡 {activeHint.title}</h3>
+              <button className="hint-close-btn" onClick={() => setHintOpen(false)}>×</button>
+            </div>
+            
+            <div className="modal-content text-left">
+              <div className="hint-section">
+                <span className="hint-subtitle">📌 ПОСЛІДОВНІСТЬ ДІЙ:</span>
+                <p className="sequence-text">{activeHint.sequence}</p>
+              </div>
+
+              {showCmdHint ? (
+                <div className="hint-section cmd-hint-box">
+                  <span className="hint-subtitle">🔍 НАТЯК НА КОМАНДИ:</span>
+                  <p className="cmd-text">{activeHint.cmdHint}</p>
+                </div>
+              ) : (
+                <button 
+                  className="reveal-hint-btn" 
+                  onClick={() => setShowCmdHint(true)}
+                >
+                  ❓ Дуже складно? Показати натяк на команди
+                </button>
+              )}
+            </div>
+
+            <button className="restart-btn" onClick={() => setHintOpen(false)}>
+              ЗРОЗУМІЛО
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* TERMINAL WINDOW */}
       {terminalOpen && (
@@ -259,7 +372,7 @@ function Desktop() {
         </Rnd>
       )}
 
-      {/* FILES WINDOW (ВІКНО З ПОСИЛАННЯМИ) */}
+      {/* FILES WINDOW */}
       {filesOpen && (
         <Rnd
           default={{
@@ -304,7 +417,7 @@ function Desktop() {
         </Rnd>
       )}
 
-      {/* NETWORK WINDOW (LEADERBOARD) */}
+      {/* NETWORK WINDOW */}
       {networkOpen && (
         <Rnd
           default={{
