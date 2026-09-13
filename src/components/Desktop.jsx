@@ -10,7 +10,7 @@ import securityImg from "../assets/security-icon.png";
 import { getInitialGameState, processCommand } from "../game/engine";
 import { soundFx } from "../game/audio";
 
-const BACKEND_URL = "http://127.0.0.1:5000"; // Змініть на свій Render URL при деплої
+const BACKEND_URL = "https://nexus-os-backend-wft7.onrender.com/"; // Змініть на свій Render URL при деплої
 
 // Файли для вікна Files (з твоїми посиланнями)
 const NEXUS_FILES = [
