@@ -12,10 +12,7 @@ body {
   margin: 0;
 }
 
-/* =========================
-   DESKTOP & PANELS
-========================= */
-
+/* DESKTOP */
 .desktop {
   position: relative;
   width: 100vw;
@@ -24,10 +21,9 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
-  padding-bottom: 48px; /* Місце для нижньої панелі */
 }
 
-/* TOP BAR */
+/* TOPBAR */
 .topbar {
   position: absolute;
   top: 0;
@@ -58,16 +54,8 @@ body {
   text-shadow: 0 0 8px rgba(46, 229, 157, 0.4);
 }
 
-.divider {
-  color: #444;
-  font-size: 18px;
-}
-
-.clock {
-  font-size: 18px;
-  letter-spacing: 1.5px;
-  color: #d1d1d1;
-}
+.divider { color: #444; font-size: 18px; }
+.clock { font-size: 18px; letter-spacing: 1.5px; color: #d1d1d1; }
 
 .topbar-right {
   display: flex;
@@ -79,84 +67,6 @@ body {
   font-size: 16px;
   color: #aaa;
   letter-spacing: 1px;
-}
-
-.status-icons {
-  display: flex;
-  gap: 12px;
-  color: #2ee59d;
-}
-
-/* BOTTOM TASKBAR (НИЖНЯ ПАНЕЛЬ) */
-.bottom-taskbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 48px;
-  background: #111114;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  z-index: 999;
-}
-
-.taskbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.start-btn {
-  background: rgba(46, 229, 157, 0.15);
-  border: 1px solid #2ee59d;
-  color: #2ee59d;
-  padding: 6px 14px;
-  font-family: monospace;
-  font-weight: bold;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: all 0.2s ease;
-}
-
-.start-btn:hover {
-  background: #2ee59d;
-  color: #000;
-  box-shadow: 0 0 10px rgba(46, 229, 157, 0.5);
-}
-
-.taskbar-items {
-  display: flex;
-  gap: 8px;
-}
-
-.taskbar-item {
-  background: #1c1c22;
-  border: 1px solid #333;
-  color: #aaa;
-  padding: 5px 12px;
-  font-size: 13px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.taskbar-item.active {
-  background: #252530;
-  color: #2ee59d;
-  border-color: #2ee59d;
-}
-
-.taskbar-right {
-  font-family: monospace;
-  font-size: 13px;
-  color: #666;
 }
 
 /* DESKTOP SHORTCUTS */
@@ -203,10 +113,7 @@ body {
   color: #e0e0e0;
 }
 
-/* =========================
-   TERMINAL WINDOW & STICKY INPUT
-========================= */
-
+/* TERMINAL WINDOW & STICKY INPUT */
 .rnd-terminal {
   z-index: 20 !important;
   display: flex !important;
@@ -250,11 +157,8 @@ body {
   cursor: pointer;
 }
 
-.terminal-close:hover {
-  color: white;
-}
+.terminal-close:hover { color: white; }
 
-/* ТЕРМІНАЛ ТА ПРИЛИПАЮЧЕ ПОЛЕ ВВОДУ */
 .terminal-body {
   flex: 1;
   padding: 20px;
@@ -267,9 +171,7 @@ body {
   flex-direction: column;
 }
 
-.terminal-history {
-  flex: 1;
-}
+.terminal-history { flex: 1; }
 
 .terminal-line {
   color: #d8d8d8;
@@ -291,7 +193,7 @@ body {
 .terminal-line.error { color: #ff4757; }
 .terminal-line.success { color: #2ee59d; }
 
-/* ПРИЛИПАЮЧИЙ ВХІД (STICKY INPUT) */
+/* STICKY INPUT */
 .input-line {
   position: sticky;
   bottom: 0;
@@ -350,38 +252,32 @@ body {
   border-color: #2ee59d;
 }
 
-/* =========================
-   CYBERPUNK HINT FAB & MODAL (БЕЗ ЖОВТОГО)
-========================= */
-
+/* HINT BUTTON & MODAL */
 .hint-fab-btn {
   position: fixed !important;
-  bottom: 65px !important; /* Піднято над нижньою панеллю */
-  right: 25px !important;
-  width: 55px !important;
-  height: 55px !important;
-  border-radius: 50% !important;
+  bottom: 30px !important;
+  right: 30px !important;
+  padding: 10px 18px !important;
+  border-radius: 6px !important;
   background: #121216 !important;
-  border: 2px solid #2ee59d !important;
-  font-size: 24px !important;
+  border: 1px solid #2ee59d !important;
+  font-family: monospace !important;
+  font-weight: bold !important;
+  font-size: 15px !important;
   color: #2ee59d !important;
   cursor: pointer !important;
   z-index: 998 !important;
   box-shadow: 0 0 15px rgba(46, 229, 157, 0.3) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  letter-spacing: 1px !important;
   transition: all 0.2s ease !important;
 }
 
 .hint-fab-btn:hover {
-  transform: scale(1.08) !important;
   background: #2ee59d !important;
   color: #000 !important;
   box-shadow: 0 0 25px rgba(46, 229, 157, 0.6) !important;
 }
 
-/* МОДАЛЬНЕ ВІКНО ПІДКАЗОК У СТИЛІ ТЕРМІНАЛУ */
 .hint-modal {
   border: 1px solid #2ee59d !important;
   background: #0f0f13 !important;
@@ -458,10 +354,7 @@ body {
   margin: 0;
 }
 
-/* =========================
-   FILES & NETWORK WINDOWS
-========================= */
-
+/* FILES & NETWORK WINDOWS */
 .files-body, .network-body {
   flex: 1;
   padding: 20px;
@@ -485,6 +378,12 @@ body {
 .file-card:hover {
   border-color: #2ee59d;
   background: rgba(46, 229, 157, 0.05);
+}
+
+.file-icon {
+  color: #2ee59d;
+  font-weight: bold;
+  font-size: 13px;
 }
 
 .file-name { color: #2ee59d; font-weight: bold; }

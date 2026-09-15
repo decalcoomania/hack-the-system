@@ -10,7 +10,7 @@ import securityImg from "../assets/security-icon.png";
 import { getInitialGameState, processCommand } from "../game/engine";
 import { soundFx } from "../game/audio";
 
-const BACKEND_URL = "https://nexus-os-backend.onrender.com"; // Ваша адреса Render
+const BACKEND_URL = "https://nexus-os-backend.onrender.com";
 
 const NEXUS_FILES = [
   { name: "github_profile.url", label: "GitHub Repository", url: "https://github.com" },
@@ -53,68 +53,68 @@ function Desktop() {
     }
   }, [gameState.history, terminalOpen]);
 
-  // НОВІ ТОНКІ ТА НЕОЧЕВИДНІ ПІДКАЗКИ
+  // СИСТЕМА ПІДКАЗОК (АНГЛІЙСЬКОЮ ТА ПРОСТИМИ СЛОВАМИ)
   const getCurrentHint = () => {
     if (!terminalOpen && !gameState.currentServer) {
       return {
-        title: "ІНІЦІАЛІЗАЦІЯ СИСТЕМИ",
-        sequence: "Термінал — це твій головний інструмент. Запусти його з робочого столу, щоб побачити доступні вузли.",
-        cmdHint: "Вузол CC-GATEWAY є первинним шлюзом. Використай утиліту огляду мережі для пошуку та підключення."
+        title: "SYSTEM INITIALIZATION",
+        sequence: "Start by opening the Terminal window from your desktop.",
+        cmdHint: "Use 'scan' to list available network nodes, then type 'connect CC-GATEWAY'."
       };
     }
 
     if (!gameState.currentServer) {
       return {
-        title: "ЛОКАЛЬНИЙ СЕКТОР",
-        sequence: "Шлюз CyberCore прийме підключення тільки після виявлення точної назви вузла.",
-        cmdHint: "Здійсни аналіз мережі локальною командою та перейди на виявлений шлюз CC-GATEWAY."
+        title: "LOCAL NETWORK",
+        sequence: "You need to scan the network to find the gateway address first.",
+        cmdHint: "Type 'scan' in the terminal, then enter 'connect CC-GATEWAY'."
       };
     }
 
     if (gameState.currentServer === "CC-GATEWAY") {
       return {
-        title: "ВУЗОЛ CC-GATEWAY",
-        sequence: "Шлюз відкриває доступ до внутрішніх серверів компанії. Оглянь їхній перелік.",
-        cmdHint: "Проскануй систему шлюзу та спробуй увійти на перший сервер обслуговування (SERVER-01)."
+        title: "CC-GATEWAY NODE",
+        sequence: "You are at the main gateway. Find the internal servers list.",
+        cmdHint: "Run 'scan' to discover target servers, then type 'connect SERVER-01'."
       };
     }
 
     switch (gameState.currentMission) {
       case 1:
         return {
-          title: "МІСІЯ 01 — ПОШУК СЛІДІВ",
-          sequence: "У службових файлах серверу є записи про підозрілі дії одного з акаунтів.",
-          cmdHint: "Перевірте список документів та вивчіть тексти списків співробітників і журналів роботи."
+          title: "MISSION 01 — FIND THE TARGET",
+          sequence: "Check the files on SERVER-01 to find which employee account is acting suspicious.",
+          cmdHint: "Type 'ls' to list files. Then read 'employees.txt' and 'notes.txt' using 'cat <filename>' to find the suspect (operator_17)."
         };
       case 2:
         return {
-          title: "МІСІЯ 02 — КЛЮЧІ ДОСТУПУ",
-          sequence: "Кадрові файли містять код референсу. Звіти про безпеку пояснюють алгоритм його конвертації в пароль.",
-          cmdHint: "На SERVER-02 прочитайте базу кадрів та безпековий звіт. Змініть префікс коду і проведіть авторизацію користувача."
+          title: "MISSION 02 — GET CREDENTIALS",
+          sequence: "Move to SERVER-02. Find the employee ID code and check security rules to turn it into a password.",
+          cmdHint: "Use 'connect SERVER-02'. Read 'employees.db' (find code NEX-7241) and 'security_report.txt'. Change NEX- to ACCESS- (password is ACCESS-7241). Then type 'login operator_17' followed by 'pass ACCESS-7241'."
         };
       case 3:
         return {
-          title: "МІСІЯ 03 — ПРИХОВАНИЙ ПОРТ",
-          sequence: "Сервер баз даних блокує доступ до служб резервування. Знайдіть примітку про захищений порт.",
-          cmdHint: "Вивчіть нотатки бази даних на SERVER-03. Використайте утиліту зняття блокування порту для відкриття SERVER-04."
+          title: "MISSION 03 — UNLOCK PORT",
+          sequence: "Go to SERVER-03. Read the database notes to find the blocked port number, then unlock it.",
+          cmdHint: "Use 'connect SERVER-03'. Read 'database_notes.txt'. Unlock the port using 'unlock PORT-8443', then connect using 'connect SERVER-04'."
         };
       case 4:
         return {
-          title: "МІСІЯ 04 — КРИПТО-АРХІВ",
-          sequence: "На сервері резервування лежать зашифровані архиви. Тільки зняття шифрування дозволить забрати дані.",
-          cmdHint: "Знайдіть цільовий .enc файл в історії доступу SERVER-04. Застосуйте декодер перед його викачуванням."
+          title: "MISSION 04 — EXTRACT DATA",
+          sequence: "Check history files on SERVER-04 to find the target .enc file. Decrypt it before downloading.",
+          cmdHint: "Read 'access_history.txt' to find 'data_17.enc'. First run 'decrypt data_17.enc', then run 'download data_17.enc'."
         };
       case 5:
         return {
-          title: "МІСІЯ 05 — ЕВАКУАЦІЯ",
-          sequence: "Система виявлення активована. Потрібно негайно зменшити слід вашої сесії та закрити з'єднання.",
-          cmdHint: "Запустіть стирання логів сесії для скидання %, відключіться від сервера та завершіть сеанс термінала."
+          title: "MISSION 05 — ESCAPE SYSTEM",
+          sequence: "Detection is high! Lower your detection level, disconnect from the server, and end session.",
+          cmdHint: "Type 'clear_logs' to reduce detection by 10%. Then run 'disconnect' and finally 'exit' to complete the game."
         };
       default:
         return {
-          title: "ДИРЕКТИВА БЕЗПЕКИ",
-          sequence: "Для перегляду всіх доступних системних команд використайте базову довідку.",
-          cmdHint: "Команда help відображає весь перелік операторів."
+          title: "SYSTEM DIRECTIVE",
+          sequence: "Check the command manual for system guidance.",
+          cmdHint: "Type 'help' in the terminal to view all available commands."
         };
     }
   };
@@ -126,7 +126,7 @@ function Desktop() {
       const data = await res.json();
       setLeaderboardData(data);
     } catch (err) {
-      console.error("Помилка БД:", err);
+      console.error("Database error:", err);
     } finally {
       setLoadingLeaderboard(false);
     }
@@ -188,7 +188,7 @@ function Desktop() {
       setIsSubmitted(true);
       fetchLeaderboard();
     } catch (err) {
-      console.error("Помилка відправки в БД:", err);
+      console.error("Database save error:", err);
     }
   };
 
@@ -201,7 +201,7 @@ function Desktop() {
         backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.65), rgba(10, 10, 15, 0.65)), url(${hexBg})`,
       }}
     >
-      {/* VERHNIA PANEN (TOPBAR) */}
+      {/* TOPBAR */}
       <div className="topbar">
         <div className="topbar-left">
           <span className="os-name">NEXUS OS v2.4</span>
@@ -214,10 +214,6 @@ function Desktop() {
             NODE: {gameState.currentServer ? gameState.currentServer : "LOCAL"}
           </span>
           <span className="cpu">CPU: 18%</span>
-          <div className="status-icons">
-            <span>📶</span>
-            <span>🛡️</span>
-          </div>
         </div>
       </div>
 
@@ -244,63 +240,36 @@ function Desktop() {
         </button>
       </div>
 
-      {/* NYZHNYA PANEN (TASKBAR) */}
-      <div className="bottom-taskbar">
-        <div className="taskbar-left">
-          <button className="start-btn" onClick={() => setTerminalOpen(true)}>⚡ NEXUS</button>
-          <div className="taskbar-items">
-            {terminalOpen && (
-              <div className="taskbar-item active" onClick={() => setTerminalOpen(true)}>
-                📟 Terminal
-              </div>
-            )}
-            {filesOpen && (
-              <div className="taskbar-item active" onClick={() => setFilesOpen(true)}>
-                📁 Files
-              </div>
-            )}
-            {networkOpen && (
-              <div className="taskbar-item active" onClick={() => setNetworkOpen(true)}>
-                🌐 Network
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="taskbar-right">
-          <span>CYBERNET SECURE CONNECTION</span>
-        </div>
-      </div>
-
-      {/* HINT BUTTON */}
+      {/* HINT BUTTON (БЕЗ ЕМОДЗІ) */}
       <button 
         className="hint-fab-btn" 
         onClick={() => {
           setHintOpen(true);
           setShowCmdHint(false);
         }} 
-        title="Підказка по місії"
+        title="Mission Hint"
       >
-        👁️
+        HINT
       </button>
 
-      {/* HINT MODAL (БЕЗ ЖОВТОГО КОЛЬОРУ) */}
+      {/* HINT MODAL */}
       {hintOpen && (
         <div className="game-modal-overlay" onClick={() => setHintOpen(false)}>
           <div className="game-modal hint-modal" onClick={(e) => e.stopPropagation()}>
             <div className="hint-header">
-              <h3>⚡ {activeHint.title}</h3>
+              <h3>[HINT] {activeHint.title}</h3>
               <button className="hint-close-btn" onClick={() => setHintOpen(false)}>×</button>
             </div>
             
             <div className="modal-content text-left">
               <div className="hint-section">
-                <span className="hint-subtitle">📌 АНАЛІЗ СИТУАЦІЇ:</span>
+                <span className="hint-subtitle">OBJECTIVE:</span>
                 <p className="sequence-text">{activeHint.sequence}</p>
               </div>
 
               {showCmdHint ? (
                 <div className="hint-section cmd-hint-box">
-                  <span className="hint-subtitle">🔍 ТАКТИЧНИЙ НАТЯК:</span>
+                  <span className="hint-subtitle">COMMAND DETAILS:</span>
                   <p className="cmd-text">{activeHint.cmdHint}</p>
                 </div>
               ) : (
@@ -308,13 +277,13 @@ function Desktop() {
                   className="reveal-hint-btn" 
                   onClick={() => setShowCmdHint(true)}
                 >
-                  [?] Запитати розширену підказку аналітика
+                  [?] Show exact commands hint
                 </button>
               )}
             </div>
 
             <button className="restart-btn" onClick={() => setHintOpen(false)}>
-              ПРИЙНЯТО
+              CLOSE
             </button>
           </div>
         </div>
@@ -352,7 +321,6 @@ function Desktop() {
                 ))}
               </div>
 
-              {/* STICKY INPUT AT BOTTOM OF TERMINAL */}
               {gameState.gameStatus === "PLAYING" && (
                 <div className="input-line">
                   <span className="prompt">&gt;</span>
@@ -425,7 +393,7 @@ function Desktop() {
                     className="file-card"
                     onClick={() => window.open(file.url, "_blank")}
                   >
-                    <div className="file-icon">📄</div>
+                    <div className="file-icon">[DOC]</div>
                     <div className="file-info">
                       <span className="file-name">{file.name}</span>
                       <span className="file-label">{file.label}</span>
@@ -495,7 +463,7 @@ function Desktop() {
       {gameState.gameStatus !== "PLAYING" && (
         <div className="game-modal-overlay">
           <div className={`game-modal ${gameState.gameStatus.toLowerCase()}`}>
-            <h2>{gameState.gameStatus === "VICTORY" ? "🏆 MISSION SUCCESS" : "🚨 MISSION FAILED"}</h2>
+            <h2>{gameState.gameStatus === "VICTORY" ? "[SUCCESS] MISSION COMPLETE" : "[FAILED] MISSION OVER"}</h2>
             <div className="modal-content">
               {gameState.gameStatus === "VICTORY" ? (
                 <>
