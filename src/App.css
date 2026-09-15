@@ -439,3 +439,44 @@ body {
   border-radius: 4px;
   margin-top: 15px;
 }
+
+/* =========================
+   CUSTOM CYBERPUNK SCROLLBAR
+========================= */
+
+/* Загальна ширина скролбара */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Фон доріжки (Track) */
+::-webkit-scrollbar-track {
+  background: #0a0a0d;
+  border-left: 1px solid rgba(46, 229, 157, 0.1);
+}
+
+/* Сам повзунок (Thumb) */
+::-webkit-scrollbar-thumb {
+  background: #1c2c26;
+  border: 1px solid #2ee59d;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(46, 229, 157, 0.3);
+}
+
+/* Повзунок при наведенні курсора */
+::-webkit-scrollbar-thumb:hover {
+  background: #2ee59d;
+  box-shadow: 0 0 12px rgba(46, 229, 157, 0.8);
+}
+
+/* Куточок перетину скролів */
+::-webkit-scrollbar-corner {
+  background: #0a0a0d;
+}
+
+/* Підтримка для Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2ee59d #0a0a0d;
+}
