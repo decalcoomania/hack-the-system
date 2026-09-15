@@ -6,14 +6,14 @@
 
 body {
   font-family: 'Rajdhani', sans-serif;
-  background: #111;
+  background: #09090b;
   color: white;
   overflow: hidden;
   margin: 0;
 }
 
 /* =========================
-   DESKTOP
+   DESKTOP & PANELS
 ========================= */
 
 .desktop {
@@ -24,24 +24,23 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+  padding-bottom: 48px; /* Місце для нижньої панелі */
 }
 
-/* =========================
-   TOP BAR
-========================= */
-
+/* TOP BAR */
 .topbar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: #1B1B1B;
-  border-bottom: none;
+  background: rgba(18, 18, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(46, 229, 157, 0.2);
   z-index: 10;
 }
 
@@ -49,26 +48,25 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  height: 100%;
 }
 
 .os-name {
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 2px;
-  color: #ffffff;
+  color: #2ee59d;
+  text-shadow: 0 0 8px rgba(46, 229, 157, 0.4);
 }
 
 .divider {
-  color: #777;
-  font-size: 22px;
-  font-weight: 300;
+  color: #444;
+  font-size: 18px;
 }
 
 .clock {
-  font-size: 23px;
+  font-size: 18px;
   letter-spacing: 1.5px;
-  color: #ffffff;
+  color: #d1d1d1;
 }
 
 .topbar-right {
@@ -77,33 +75,98 @@ body {
   gap: 24px;
 }
 
-.network,
-.cpu {
-  font-size: 20px;
-  color: #d1d1d1;
+.network, .cpu {
+  font-size: 16px;
+  color: #aaa;
   letter-spacing: 1px;
-  font-weight: 500;
 }
 
 .status-icons {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  color: #ffffff;
-  font-size: 20px;
+  gap: 12px;
+  color: #2ee59d;
 }
 
-/* =========================
-   DESKTOP SHORTCUTS
-========================= */
+/* BOTTOM TASKBAR (НИЖНЯ ПАНЕЛЬ) */
+.bottom-taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  background: #111114;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 999;
+}
 
+.taskbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.start-btn {
+  background: rgba(46, 229, 157, 0.15);
+  border: 1px solid #2ee59d;
+  color: #2ee59d;
+  padding: 6px 14px;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.start-btn:hover {
+  background: #2ee59d;
+  color: #000;
+  box-shadow: 0 0 10px rgba(46, 229, 157, 0.5);
+}
+
+.taskbar-items {
+  display: flex;
+  gap: 8px;
+}
+
+.taskbar-item {
+  background: #1c1c22;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 5px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.taskbar-item.active {
+  background: #252530;
+  color: #2ee59d;
+  border-color: #2ee59d;
+}
+
+.taskbar-right {
+  font-family: monospace;
+  font-size: 13px;
+  color: #666;
+}
+
+/* DESKTOP SHORTCUTS */
 .desktop-icons {
   position: absolute;
-  top: 90px;
+  top: 80px;
   left: 30px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
   z-index: 5;
 }
 
@@ -124,7 +187,7 @@ body {
 }
 
 .desktop-shortcut:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   transform: translateY(-2px);
 }
 
@@ -132,18 +195,16 @@ body {
   width: 41px;
   height: 41px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .shortcut-label {
   font-size: 15px;
   letter-spacing: 1px;
   color: #e0e0e0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 /* =========================
-   REACT-RND TERMINAL CONTAINER
+   TERMINAL WINDOW & STICKY INPUT
 ========================= */
 
 .rnd-terminal {
@@ -154,101 +215,101 @@ body {
 .terminal-window {
   width: 100%;
   height: 100%;
-  background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+  background: #0d0d10;
+  border: 1px solid rgba(46, 229, 157, 0.3);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   border-radius: 6px;
   overflow: hidden;
 }
 
-/* TERMINAL HEADER (+2px шрифт) */
-
 .terminal-header {
-  height: 46px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background: #242424;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background: #16161c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   cursor: move;
   user-select: none;
 }
 
 .terminal-title {
-  font-size: 16px; /* Збільшено з 14px */
+  font-size: 15px;
   letter-spacing: 1px;
-  color: #d5d5d5;
+  color: #2ee59d;
 }
 
 .terminal-close {
   border: none;
   background: transparent;
   color: #aaa;
-  font-size: 26px; /* Збільшено з 24px */
+  font-size: 24px;
   cursor: pointer;
-  line-height: 1;
 }
 
 .terminal-close:hover {
   color: white;
 }
 
-/* TERMINAL BODY (+2px шрифт) */
-
+/* ТЕРМІНАЛ ТА ПРИЛИПАЮЧЕ ПОЛЕ ВВОДУ */
 .terminal-body {
   flex: 1;
-  padding: 22px;
+  padding: 20px;
   font-family: monospace;
-  font-size: 18px; /* Збільшено з 16px до 18px */
-  line-height: 1.7;
-  overflow: auto;
-  background: #101010;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-y: auto;
+  background: #0a0a0d;
+  display: flex;
+  flex-direction: column;
+}
+
+.terminal-history {
+  flex: 1;
 }
 
 .terminal-line {
   color: #d8d8d8;
   word-break: break-word;
+  margin-bottom: 4px;
 }
 
 .terminal-line.user {
   color: #2ee59d;
   font-weight: bold;
-  background: rgba(46, 229, 157, 0.07);
+  background: rgba(46, 229, 157, 0.06);
   padding: 3px 8px;
   border-radius: 4px;
-  margin: 4px 0;
-  display: inline-block;
-  width: 100%;
+  margin: 6px 0;
+  display: block;
 }
 
-.terminal-line.system {
-  color: #aaa;
-}
+.terminal-line.system { color: #8a8a9e; }
+.terminal-line.error { color: #ff4757; }
+.terminal-line.success { color: #2ee59d; }
 
-.terminal-line.error {
-  color: #ff5555;
-}
-
-.terminal-line.success {
-  color: #2ee59d;
-}
-
-/* INPUT LINE (+2px шрифт) */
-
+/* ПРИЛИПАЮЧИЙ ВХІД (STICKY INPUT) */
 .input-line {
+  position: sticky;
+  bottom: 0;
+  background: #0d0d12;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(46, 229, 157, 0.2);
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: auto;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
 .prompt {
   color: #2ee59d;
   font-weight: bold;
-  font-size: 20px; /* Збільшено з 18px */
+  font-size: 20px;
 }
 
 .cmd-input {
@@ -258,366 +319,55 @@ body {
   outline: none;
   color: #2ee59d;
   font-family: monospace;
-  font-size: 18px; /* Збільшено з 16px до 18px */
+  font-size: 18px;
   font-weight: bold;
 }
 
-/* =========================
-   TERMINAL STATUS (+2px шрифт)
-========================= */
-
 .terminal-status {
-  height: 52px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  background: #181818;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0 20px;
+  background: #121216;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-family: monospace;
-  font-size: 16px; /* Збільшено з 14px */
+  font-size: 15px;
   color: #aaa;
-  user-select: none;
-}
-
-.status-xp {
-  letter-spacing: 1px;
-}
-
-.detection {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.detection-label {
-  letter-spacing: 1px;
-}
-
-.segments {
-  display: flex;
-  gap: 4px;
 }
 
 .segment {
-  width: 10px;
-  height: 16px;
-  border: 1px solid #444;
-  background: #222;
-  border-radius: 1px;
+  width: 9px;
+  height: 14px;
+  border: 1px solid #333;
+  background: #1a1a20;
+  display: inline-block;
+  margin-right: 3px;
 }
 
 .segment.active {
   background: #2ee59d;
   border-color: #2ee59d;
-  box-shadow: 0 0 6px rgba(46, 229, 157, 0.4);
-}
-
-.detection-percent {
-  margin-left: 6px;
-  color: #888;
-}
-
-.status-connection {
-  letter-spacing: 1px;
-}
-
-.active-text {
-  color: #2ee59d;
-  font-weight: bold;
-}
-
-.failed-text {
-  color: #ff5555;
-  font-weight: bold;
 }
 
 /* =========================
-   GAME OVER / VICTORY MODAL
+   CYBERPUNK HINT FAB & MODAL (БЕЗ ЖОВТОГО)
 ========================= */
 
-.game-modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.game-modal {
-  width: 440px;
-  padding: 30px;
-  background: #181818;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
-  font-family: 'Rajdhani', sans-serif;
-}
-
-.game-modal.victory {
-  border: 1px solid #2ee59d;
-}
-
-.game-modal.failed {
-  border: 1px solid #ff5555;
-}
-
-.game-modal h2 {
-  margin-top: 0;
-  font-size: 28px;
-  letter-spacing: 2px;
-}
-
-.game-modal.victory h2 {
-  color: #2ee59d;
-}
-
-.game-modal.failed h2 {
-  color: #ff5555;
-}
-
-.modal-content {
-  margin: 20px 0;
-  font-family: monospace;
-  font-size: 16px;
-  line-height: 1.8;
-  color: #ccc;
-}
-
-.modal-content .highlight {
-  color: #fff;
-  font-weight: bold;
-  font-size: 19px;
-}
-
-.restart-btn {
-  background: #242424;
-  border: 1px solid #555;
-  color: white;
-  padding: 10px 24px;
-  font-family: inherit;
-  font-size: 16px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.restart-btn:hover {
-  background: #ffffff;
-  color: #000000;
-}
-/* =========================
-   GLITCH & RED ALERT EFFECT (Detection > 80%)
-========================= */
-
-@keyframes redFlash {
-  0% { box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2); }
-  50% { box-shadow: inset 0 0 60px rgba(255, 0, 0, 0.6); }
-  100% { box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2); }
-}
-
-.glitch-alert {
-  animation: redFlash 1.2s infinite ease-in-out;
-}
-
-.crt-glitch {
-  border-color: #ff3333 !important;
-  box-shadow: 0 0 25px rgba(255, 51, 51, 0.5) !important;
-}
-
-/* =========================
-   FILES WINDOW & GRID
-========================= */
-
-.files-body {
-  flex: 1;
-  padding: 20px;
-  background: #121212;
-  font-family: monospace;
-}
-
-.files-hint {
-  color: #aaa;
-  font-size: 14px;
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.files-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.file-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px;
-  background: #1c1c1c;
-  border: 1px solid #333;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.file-card:hover {
-  background: rgba(46, 229, 157, 0.1);
-  border-color: #2ee59d;
-  transform: translateX(4px);
-}
-
-.file-icon {
-  font-size: 24px;
-}
-
-.file-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.file-name {
-  color: #2ee59d;
-  font-weight: bold;
-  font-size: 15px;
-}
-
-.file-label {
-  color: #888;
-  font-size: 13px;
-}
-
-/* =========================
-   NETWORK WINDOW & LEADERBOARD
-========================= */
-
-.network-body {
-  flex: 1;
-  padding: 20px;
-  background: #101010;
-  overflow-y: auto;
-  font-family: monospace;
-}
-
-.loading-text {
-  text-align: center;
-  color: #2ee59d;
-  font-size: 18px;
-  margin-top: 40px;
-}
-
-.leaderboard-table {
-  width: 100%;
-  border-collapse: collapse;
-  color: #d8d8d8;
-  font-size: 15px;
-}
-
-.leaderboard-table th {
-  background: #1b1b1b;
-  color: #2ee59d;
-  padding: 10px;
-  text-align: left;
-  border-bottom: 2px solid #333;
-}
-
-.leaderboard-table td {
-  padding: 10px;
-  border-bottom: 1px solid #222;
-}
-
-.leaderboard-table tr:hover {
-  background: rgba(46, 229, 157, 0.05);
-}
-
-.nick-col {
-  color: #ffffff;
-  font-weight: bold;
-}
-
-.xp-col {
-  color: #ffe600;
-  font-weight: bold;
-}
-
-.det-col {
-  color: #ff5555;
-}
-
-.date-col {
-  color: #777;
-  font-size: 13px;
-}
-
-/* =========================
-   SCORE SUBMIT IN MODAL
-========================= */
-
-.score-submit-box {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-  justify-content: center;
-}
-
-.nick-input {
-  background: #111;
-  border: 1px solid #2ee59d;
-  color: #2ee59d;
-  padding: 8px 12px;
-  font-family: monospace;
-  font-size: 15px;
-  outline: none;
-  border-radius: 4px;
-}
-
-.submit-btn {
-  background: #2ee59d;
-  border: none;
-  color: #000;
-  font-family: inherit;
-  font-weight: bold;
-  padding: 8px 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: opacity 0.2s;
-}
-
-.submit-btn:hover {
-  opacity: 0.85;
-}
-
-.success-text {
-  color: #2ee59d;
-  font-weight: bold;
-  margin-top: 12px;
-}
-
-/* =========================
-   HINT FAB BUTTON & MODAL
-========================= */
-
-/* Кнопка-лампочка у кутку */
 .hint-fab-btn {
   position: fixed !important;
-  bottom: 30px !important;
-  right: 30px !important;
-  width: 60px !important;
-  height: 60px !important;
+  bottom: 65px !important; /* Піднято над нижньою панеллю */
+  right: 25px !important;
+  width: 55px !important;
+  height: 55px !important;
   border-radius: 50% !important;
-  background: #1b1b1b !important;
-  border: 2px solid #ffe600 !important;
-  font-size: 28px !important;
+  background: #121216 !important;
+  border: 2px solid #2ee59d !important;
+  font-size: 24px !important;
+  color: #2ee59d !important;
   cursor: pointer !important;
-  z-index: 9999 !important; /* Гарантує, що кнопка поверх усіх вікон */
-  box-shadow: 0 4px 20px rgba(255, 230, 0, 0.4) !important;
+  z-index: 998 !important;
+  box-shadow: 0 0 15px rgba(46, 229, 157, 0.3) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -625,108 +375,168 @@ body {
 }
 
 .hint-fab-btn:hover {
-  transform: scale(1.1) !important;
-  background: #ffe600 !important;
-  box-shadow: 0 6px 25px rgba(255, 230, 0, 0.7) !important;
+  transform: scale(1.08) !important;
+  background: #2ee59d !important;
+  color: #000 !important;
+  box-shadow: 0 0 25px rgba(46, 229, 157, 0.6) !important;
 }
 
-/* Модальне вікно підказки */
+/* МОДАЛЬНЕ ВІКНО ПІДКАЗОК У СТИЛІ ТЕРМІНАЛУ */
 .hint-modal {
-  border: 1px solid #ffe600 !important;
-  max-width: 500px;
+  border: 1px solid #2ee59d !important;
+  background: #0f0f13 !important;
+  box-shadow: 0 0 35px rgba(46, 229, 157, 0.2) !important;
+  max-width: 520px;
 }
 
 .hint-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 230, 0, 0.2);
+  border-bottom: 1px solid rgba(46, 229, 157, 0.25);
   padding-bottom: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .hint-header h3 {
   margin: 0;
-  color: #ffe600;
-  font-size: 20px;
+  color: #2ee59d;
+  font-size: 18px;
   letter-spacing: 1px;
 }
 
-.hint-close-btn {
-  background: transparent;
-  border: none;
-  color: #888;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.hint-close-btn:hover {
-  color: #fff;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.hint-section {
-  margin-bottom: 16px;
-}
-
 .hint-subtitle {
-  color: #ffe600;
+  color: #00e5ff;
   font-size: 13px;
   font-weight: bold;
   letter-spacing: 1px;
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .sequence-text {
-  color: #2ee59d;
+  color: #e0e0e0;
   font-size: 15px;
-  line-height: 1.5;
-  background: rgba(46, 229, 157, 0.08);
-  padding: 10px;
-  border-left: 3px solid #2ee59d;
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-left: 3px solid #00e5ff;
   border-radius: 4px;
-  margin: 0;
+  margin: 0 0 16px 0;
 }
 
 .reveal-hint-btn {
   width: 100%;
-  background: rgba(255, 230, 0, 0.1);
-  border: 1px dashed #ffe600;
-  color: #ffe600;
+  background: rgba(46, 229, 157, 0.08);
+  border: 1px dashed #2ee59d;
+  color: #2ee59d;
   padding: 10px;
-  font-family: inherit;
-  font-size: 14px;
+  font-family: monospace;
+  font-size: 13px;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s ease;
-  margin-top: 10px;
 }
 
 .reveal-hint-btn:hover {
-  background: #ffe600;
+  background: #2ee59d;
   color: #000;
+  font-weight: bold;
 }
 
 .cmd-hint-box {
-  animation: fadeIn 0.3s ease-in-out;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 229, 255, 0.05);
   padding: 12px;
   border-radius: 4px;
-  border: 1px solid rgba(255, 230, 0, 0.3);
+  border: 1px solid rgba(0, 229, 255, 0.2);
 }
 
 .cmd-text {
-  color: #ddd;
+  color: #b8e9f0;
   font-size: 14px;
   line-height: 1.6;
   margin: 0;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+/* =========================
+   FILES & NETWORK WINDOWS
+========================= */
+
+.files-body, .network-body {
+  flex: 1;
+  padding: 20px;
+  background: #0a0a0d;
+  overflow-y: auto;
+  font-family: monospace;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  background: #141418;
+  border: 1px solid #222;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.file-card:hover {
+  border-color: #2ee59d;
+  background: rgba(46, 229, 157, 0.05);
+}
+
+.file-name { color: #2ee59d; font-weight: bold; }
+.file-label { color: #777; font-size: 13px; }
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ccc;
+}
+
+.leaderboard-table th {
+  background: #16161c;
+  color: #2ee59d;
+  padding: 10px;
+  text-align: left;
+}
+
+.leaderboard-table td {
+  padding: 10px;
+  border-bottom: 1px solid #1a1a20;
+}
+
+/* MODAL OVERLAY */
+.game-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.game-modal {
+  width: 440px;
+  padding: 26px;
+  background: #121216;
+  border-radius: 8px;
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.restart-btn {
+  background: #2ee59d;
+  border: none;
+  color: black;
+  font-weight: bold;
+  padding: 10px 24px;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 15px;
 }

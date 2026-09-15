@@ -10,7 +10,7 @@ import securityImg from "../assets/security-icon.png";
 import { getInitialGameState, processCommand } from "../game/engine";
 import { soundFx } from "../game/audio";
 
-const BACKEND_URL = "https://nexus-os-backend.onrender.com"; // Вкажіть свій Render URL
+const BACKEND_URL = "https://nexus-os-backend.onrender.com"; // Ваша адреса Render
 
 const NEXUS_FILES = [
   { name: "github_profile.url", label: "GitHub Repository", url: "https://github.com" },
@@ -24,9 +24,8 @@ function Desktop() {
   const [networkOpen, setNetworkOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
   
-  // Стан підказок
   const [hintOpen, setHintOpen] = useState(false);
-  const [showCmdHint, setShowCmdHint] = useState(false); // Прихований натяк на команди
+  const [showCmdHint, setShowCmdHint] = useState(false);
 
   const [gameState, setGameState] = useState(() => {
     const saved = localStorage.getItem("nexus_game_state");
@@ -54,68 +53,68 @@ function Desktop() {
     }
   }, [gameState.history, terminalOpen]);
 
-  // ДВОХРІВНЕВА СИСТЕМА ПІДКАЗОК
+  // НОВІ ТОНКІ ТА НЕОЧЕВИДНІ ПІДКАЗКИ
   const getCurrentHint = () => {
     if (!terminalOpen && !gameState.currentServer) {
       return {
         title: "ІНІЦІАЛІЗАЦІЯ СИСТЕМИ",
-        sequence: "Відкрити термінал ➔ Оглянути мережу ➔ Підключитись до шлюзу",
-        cmdHint: "Відкрийте іконку Terminal. Спочатку використайте команду 'scan', а потім підключіться: 'connect CC-GATEWAY'."
+        sequence: "Термінал — це твій головний інструмент. Запусти його з робочого столу, щоб побачити доступні вузли.",
+        cmdHint: "Вузол CC-GATEWAY є первинним шлюзом. Використай утиліту огляду мережі для пошуку та підключення."
       };
     }
 
     if (!gameState.currentServer) {
       return {
-        title: "ВХІД У МЕРЕЖУ",
-        sequence: "Пошук доступних вузлів ➔ Підключення до точки входу",
-        cmdHint: "Введіть команду 'scan' у терміналі, а потім виконайте 'connect CC-GATEWAY'."
+        title: "ЛОКАЛЬНИЙ СЕКТОР",
+        sequence: "Шлюз CyberCore прийме підключення тільки після виявлення точної назви вузла.",
+        cmdHint: "Здійсни аналіз мережі локальною командою та перейди на виявлений шлюз CC-GATEWAY."
       };
     }
 
     if (gameState.currentServer === "CC-GATEWAY") {
       return {
-        title: "СКАНУВАННЯ CYBERCORE",
-        sequence: "Сканування мережі сервера ➔ Підключення до першого сервера",
-        cmdHint: "Використайте команду 'scan', після чого підключіться: 'connect SERVER-01'."
+        title: "ВУЗОЛ CC-GATEWAY",
+        sequence: "Шлюз відкриває доступ до внутрішніх серверів компанії. Оглянь їхній перелік.",
+        cmdHint: "Проскануй систему шлюзу та спробуй увійти на перший сервер обслуговування (SERVER-01)."
       };
     }
 
     switch (gameState.currentMission) {
       case 1:
         return {
-          title: "МІСІЯ 01 — ПОШУК ПІДОЗРЮВАНОГО",
-          sequence: "Огляд файлової системи ➔ Читання списків та нотаток ➔ Вирахування оператора",
-          cmdHint: "Перевірте доступні файли через 'ls'. Уважно прочитайте 'cat employees.txt' та 'cat notes.txt', щоб знайти ім'я підозрілого співробітника (operator_17)."
+          title: "МІСІЯ 01 — ПОШУК СЛІДІВ",
+          sequence: "У службових файлах серверу є записи про підозрілі дії одного з акаунтів.",
+          cmdHint: "Перевірте список документів та вивчіть тексти списків співробітників і журналів роботи."
         };
       case 2:
         return {
-          title: "МІСІЯ 02 — ОТРИМАННЯ ДОСТУПУ",
-          sequence: "Перехід на SERVER-02 ➔ Пошук референсу ➔ Зчитування правила ➔ Вхід під користувачем ➔ Передача пароля",
-          cmdHint: "Виконайте 'connect SERVER-02'. Прочитайте 'employees.db' (знайдіть NEX-7241) та 'security_report.txt'. Замініть NEX- на ACCESS- (пароль: ACCESS-7241). Запустіть вхід 'login operator_17', а потім підтвердіть через 'pass ACCESS-7241'."
+          title: "МІСІЯ 02 — КЛЮЧІ ДОСТУПУ",
+          sequence: "Кадрові файли містять код референсу. Звіти про безпеку пояснюють алгоритм його конвертації в пароль.",
+          cmdHint: "На SERVER-02 прочитайте базу кадрів та безпековий звіт. Змініть префікс коду і проведіть авторизацію користувача."
         };
       case 3:
         return {
-          title: "МІСІЯ 03 — РОЗБЛОКУВАННЯ ПОРТУ",
-          sequence: "Перехід на SERVER-03 ➔ Пошук номера порту ➔ Авторизація порту ➔ Вхід на SERVER-04",
-          cmdHint: "Перейдіть на 'connect SERVER-03'. Прочитайте 'database_notes.txt', знайдіть порт 'PORT-8443' і розблокуйте його: 'unlock PORT-8443'. Після цього виконайте 'connect SERVER-04'."
+          title: "МІСІЯ 03 — ПРИХОВАНИЙ ПОРТ",
+          sequence: "Сервер баз даних блокує доступ до служб резервування. Знайдіть примітку про захищений порт.",
+          cmdHint: "Вивчіть нотатки бази даних на SERVER-03. Використайте утиліту зняття блокування порту для відкриття SERVER-04."
         };
       case 4:
         return {
-          title: "МІСІЯ 04 — ВИКРАДЕННЯ ДАНИХ",
-          sequence: "Перегляд історії ➔ Пошук .enc файла ➔ Розшифрування ➔ Викрадення на ПК",
-          cmdHint: "Прочитайте 'access_history.txt' для виявлення 'data_17.enc'. Спочатку зніміть захист командою 'decrypt data_17.enc', а вже потім викачайте файл через 'download data_17.enc'."
+          title: "МІСІЯ 04 — КРИПТО-АРХІВ",
+          sequence: "На сервері резервування лежать зашифровані архиви. Тільки зняття шифрування дозволить забрати дані.",
+          cmdHint: "Знайдіть цільовий .enc файл в історії доступу SERVER-04. Застосуйте декодер перед його викачуванням."
         };
       case 5:
         return {
-          title: "МІСІЯ 05 — ВТЕЧА ТА ЗНИЩЕННЯ СЛІДІВ",
-          sequence: "Знищення слідів (-10% Detection) ➔ Відключення від сервера ➔ Завершення сесії",
-          cmdHint: "Негайно очистіть логи командою 'clear_logs'. Потім від'єднайтеся через 'disconnect' і завершіть роботу командою 'exit'."
+          title: "МІСІЯ 05 — ЕВАКУАЦІЯ",
+          sequence: "Система виявлення активована. Потрібно негайно зменшити слід вашої сесії та закрити з'єднання.",
+          cmdHint: "Запустіть стирання логів сесії для скидання %, відключіться від сервера та завершіть сеанс термінала."
         };
       default:
         return {
-          title: "ПОРАДА АГЕНТУ",
-          sequence: "Перегляд інструкцій ➔ Виконання команд",
-          cmdHint: "Введіть команду 'help' у терміналі для перегляду списку всіх утиліт."
+          title: "ДИРЕКТИВА БЕЗПЕКИ",
+          sequence: "Для перегляду всіх доступних системних команд використайте базову довідку.",
+          cmdHint: "Команда help відображає весь перелік операторів."
         };
     }
   };
@@ -199,32 +198,30 @@ function Desktop() {
     <div
       className={`desktop ${gameState.detection >= 80 ? "glitch-alert" : ""}`}
       style={{
-        backgroundImage: `linear-gradient(rgba(20, 20, 20, 0.55), rgba(20, 20, 20, 0.55)), url(${hexBg})`,
+        backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.65), rgba(10, 10, 15, 0.65)), url(${hexBg})`,
       }}
     >
-      {/* TOP BAR */}
+      {/* VERHNIA PANEN (TOPBAR) */}
       <div className="topbar">
         <div className="topbar-left">
-          <span className="os-name">NEXUS OS</span>
+          <span className="os-name">NEXUS OS v2.4</span>
           <span className="divider">|</span>
-          <span className="clock">04:04</span>
+          <span className="clock">04:04 AM</span>
         </div>
 
         <div className="topbar-right">
           <span className="network">
-            NETWORK: {gameState.currentServer ? gameState.currentServer : "CONNECTED"}
+            NODE: {gameState.currentServer ? gameState.currentServer : "LOCAL"}
           </span>
-          <span className="cpu">CPU: 24%</span>
+          <span className="cpu">CPU: 18%</span>
           <div className="status-icons">
-            <span>🕒</span>
             <span>📶</span>
-            <span>🔋</span>
-            <span>⚙</span>
+            <span>🛡️</span>
           </div>
         </div>
       </div>
 
-      {/* DESKTOP ICONS */}
+      {/* DESKTOP SHORTCUTS */}
       <div className="desktop-icons">
         <button className="desktop-shortcut" onClick={() => setTerminalOpen(true)}>
           <img src={terminalImg} alt="Terminal" className="shortcut-img" />
@@ -247,36 +244,63 @@ function Desktop() {
         </button>
       </div>
 
-      {/* КНОПКА-ЛАМПОЧКА (ПІДКАЗКА) */}
+      {/* NYZHNYA PANEN (TASKBAR) */}
+      <div className="bottom-taskbar">
+        <div className="taskbar-left">
+          <button className="start-btn" onClick={() => setTerminalOpen(true)}>⚡ NEXUS</button>
+          <div className="taskbar-items">
+            {terminalOpen && (
+              <div className="taskbar-item active" onClick={() => setTerminalOpen(true)}>
+                📟 Terminal
+              </div>
+            )}
+            {filesOpen && (
+              <div className="taskbar-item active" onClick={() => setFilesOpen(true)}>
+                📁 Files
+              </div>
+            )}
+            {networkOpen && (
+              <div className="taskbar-item active" onClick={() => setNetworkOpen(true)}>
+                🌐 Network
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="taskbar-right">
+          <span>CYBERNET SECURE CONNECTION</span>
+        </div>
+      </div>
+
+      {/* HINT BUTTON */}
       <button 
         className="hint-fab-btn" 
         onClick={() => {
           setHintOpen(true);
-          setShowCmdHint(false); // Скидаємо відкритий натяк при новому відкритті
+          setShowCmdHint(false);
         }} 
         title="Підказка по місії"
       >
-        💡
+        👁️
       </button>
 
-      {/* МОДАЛЬНЕ ВІКНО ДВОХРІВНЕВОЇ ПІДКАЗКИ */}
+      {/* HINT MODAL (БЕЗ ЖОВТОГО КОЛЬОРУ) */}
       {hintOpen && (
         <div className="game-modal-overlay" onClick={() => setHintOpen(false)}>
           <div className="game-modal hint-modal" onClick={(e) => e.stopPropagation()}>
             <div className="hint-header">
-              <h3>💡 {activeHint.title}</h3>
+              <h3>⚡ {activeHint.title}</h3>
               <button className="hint-close-btn" onClick={() => setHintOpen(false)}>×</button>
             </div>
             
             <div className="modal-content text-left">
               <div className="hint-section">
-                <span className="hint-subtitle">📌 ПОСЛІДОВНІСТЬ ДІЙ:</span>
+                <span className="hint-subtitle">📌 АНАЛІЗ СИТУАЦІЇ:</span>
                 <p className="sequence-text">{activeHint.sequence}</p>
               </div>
 
               {showCmdHint ? (
                 <div className="hint-section cmd-hint-box">
-                  <span className="hint-subtitle">🔍 НАТЯК НА КОМАНДИ:</span>
+                  <span className="hint-subtitle">🔍 ТАКТИЧНИЙ НАТЯК:</span>
                   <p className="cmd-text">{activeHint.cmdHint}</p>
                 </div>
               ) : (
@@ -284,13 +308,13 @@ function Desktop() {
                   className="reveal-hint-btn" 
                   onClick={() => setShowCmdHint(true)}
                 >
-                  ❓ Дуже складно? Показати натяк на команди
+                  [?] Запитати розширену підказку аналітика
                 </button>
               )}
             </div>
 
             <button className="restart-btn" onClick={() => setHintOpen(false)}>
-              ЗРОЗУМІЛО
+              ПРИЙНЯТО
             </button>
           </div>
         </div>
@@ -301,7 +325,7 @@ function Desktop() {
         <Rnd
           default={{
             x: window.innerWidth / 2 - 490,
-            y: window.innerHeight / 2 - 320,
+            y: window.innerHeight / 2 - 340,
             width: 980,
             height: 640,
           }}
@@ -313,19 +337,22 @@ function Desktop() {
         >
           <div className={`terminal-window ${gameState.detection >= 80 ? "crt-glitch" : ""}`}>
             <div className="terminal-header">
-              <span className="terminal-title">NEXUS TERMINAL</span>
+              <span className="terminal-title">NEXUS TERMINAL v1.0</span>
               <button className="terminal-close" onClick={() => setTerminalOpen(false)}>
                 ×
               </button>
             </div>
 
             <div className="terminal-body">
-              {gameState.history.map((item, index) => (
-                <div key={index} className={`terminal-line ${item.type}`}>
-                  {item.text}
-                </div>
-              ))}
+              <div className="terminal-history">
+                {gameState.history.map((item, index) => (
+                  <div key={index} className={`terminal-line ${item.type}`}>
+                    {item.text}
+                  </div>
+                ))}
+              </div>
 
+              {/* STICKY INPUT AT BOTTOM OF TERMINAL */}
               {gameState.gameStatus === "PLAYING" && (
                 <div className="input-line">
                   <span className="prompt">&gt;</span>
@@ -362,10 +389,7 @@ function Desktop() {
               </div>
 
               <div className="status-connection">
-                CONNECTION:{" "}
-                <span className={gameState.detection >= 100 ? "failed-text" : "active-text"}>
-                  {gameState.gameStatus === "FAILED" ? "TERMINATED" : "ACTIVE"}
-                </span>
+                STATUS: <span className="active-text">ACTIVE</span>
               </div>
             </div>
           </div>
@@ -389,14 +413,11 @@ function Desktop() {
         >
           <div className="terminal-window files-window">
             <div className="terminal-header files-header">
-              <span className="terminal-title">NEXUS FILES — SYSTEM DOCUMENTS</span>
-              <button className="terminal-close" onClick={() => setFilesOpen(false)}>
-                ×
-              </button>
+              <span className="terminal-title">NEXUS FILES</span>
+              <button className="terminal-close" onClick={() => setFilesOpen(false)}>×</button>
             </div>
 
             <div className="files-body">
-              <p className="files-hint">Encrypted agent resources. Click to access external link:</p>
               <div className="files-grid">
                 {NEXUS_FILES.map((file, i) => (
                   <div
@@ -434,44 +455,34 @@ function Desktop() {
         >
           <div className="terminal-window network-window">
             <div className="terminal-header network-header">
-              <span className="terminal-title">NEXUS NETWORK — GLOBAL HIGH SCORES</span>
-              <button className="terminal-close" onClick={() => setNetworkOpen(false)}>
-                ×
-              </button>
+              <span className="terminal-title">GLOBAL LEADERBOARD</span>
+              <button className="terminal-close" onClick={() => setNetworkOpen(false)}>×</button>
             </div>
 
             <div className="network-body">
               {loadingLeaderboard ? (
-                <div className="loading-text">FETCHING DATABASE RECORDS...</div>
+                <div className="loading-text">FETCHING RECORDS...</div>
               ) : (
                 <table className="leaderboard-table">
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>AGENT / NICKNAME</th>
+                      <th>AGENT</th>
                       <th>XP</th>
                       <th>DETECTION</th>
                       <th>DATE</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {leaderboardData.length === 0 ? (
-                      <tr>
-                        <td colSpan="5" style={{ textAlign: "center" }}>
-                          NO DATABASE RECORDS FOUND
-                        </td>
+                    {leaderboardData.map((row, idx) => (
+                      <tr key={row.id || idx}>
+                        <td>{idx + 1}</td>
+                        <td className="nick-col">{row.nickname}</td>
+                        <td className="xp-col">{row.xp}</td>
+                        <td className="det-col">{row.detection}%</td>
+                        <td className="date-col">{row.date}</td>
                       </tr>
-                    ) : (
-                      leaderboardData.map((row, idx) => (
-                        <tr key={row.id || idx}>
-                          <td>{idx + 1}</td>
-                          <td className="nick-col">{row.nickname}</td>
-                          <td className="xp-col">{row.xp}</td>
-                          <td className="det-col">{row.detection}%</td>
-                          <td className="date-col">{row.date}</td>
-                        </tr>
-                      ))
-                    )}
+                    ))}
                   </tbody>
                 </table>
               )}
@@ -480,24 +491,17 @@ function Desktop() {
         </Rnd>
       )}
 
-      {/* MODAL: VICTORY / GAME OVER */}
+      {/* MODAL VICTORY/FAIL */}
       {gameState.gameStatus !== "PLAYING" && (
         <div className="game-modal-overlay">
           <div className={`game-modal ${gameState.gameStatus.toLowerCase()}`}>
-            <h2>
-              {gameState.gameStatus === "VICTORY"
-                ? "🏆 MISSION SUCCESS"
-                : "🚨 MISSION FAILED"}
-            </h2>
+            <h2>{gameState.gameStatus === "VICTORY" ? "🏆 MISSION SUCCESS" : "🚨 MISSION FAILED"}</h2>
             <div className="modal-content">
               {gameState.gameStatus === "VICTORY" ? (
                 <>
-                  <p>TARGET: CYBERCORE</p>
-                  <p>DATA: PROJECT_NOVA</p>
-                  <p>STATUS: EXTRACTED</p>
+                  <p>PROJECT_NOVA: EXTRACTED</p>
                   <p>FINAL DETECTION: {gameState.detection}%</p>
-                  <p className="highlight">TOTAL XP: {gameState.xp}</p>
-
+                  <p className="highlight">XP: {gameState.xp}</p>
                   {!isSubmitted ? (
                     <div className="score-submit-box">
                       <input
@@ -507,25 +511,17 @@ function Desktop() {
                         value={playerNick}
                         onChange={(e) => setPlayerNick(e.target.value)}
                       />
-                      <button className="submit-btn" onClick={handleScoreSubmit}>
-                        SAVE SCORE
-                      </button>
+                      <button className="submit-btn" onClick={handleScoreSubmit}>SAVE</button>
                     </div>
                   ) : (
-                    <p className="success-text">SCORE SAVED TO DATABASE!</p>
+                    <p className="success-text">SCORE SAVED TO NETWORK!</p>
                   )}
                 </>
               ) : (
-                <>
-                  <p>INTRUSION DETECTED BY CYBERCORE</p>
-                  <p>CONNECTION TERMINATED</p>
-                  <p>PROJECT_NOVA: LOST</p>
-                </>
+                <p>INTRUSION DETECTED. CONNECTION TERMINATED.</p>
               )}
             </div>
-            <button className="restart-btn" onClick={handleRestart}>
-              RESTART OPERATION
-            </button>
+            <button className="restart-btn" onClick={handleRestart}>RESTART</button>
           </div>
         </div>
       )}
