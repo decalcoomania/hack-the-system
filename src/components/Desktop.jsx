@@ -119,18 +119,40 @@ function Desktop() {
     }
   };
 
-  const fetchLeaderboard = async () => {
-    setLoadingLeaderboard(true);
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/leaderboard`);
-      const data = await res.json();
-      setLeaderboardData(data);
-    } catch (err) {
-      console.error("Database error:", err);
-    } finally {
-      setLoadingLeaderboard(false);
+  const BACKEND_URL = 'https://nexus-os-backend-wft7.onrender.com';
+
+const BACKEND_URL = 'https://nexus-os-backend-wft7.onrender.com';
+
+const fetchLeaderboard = async () => {
+  setLoadingLeaderboard(true);
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/leaderboard`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server returned status code ${res.status}`);
     }
-  };
+
+    const data = await res.json();
+
+    if (Array.isArray(data)) {
+      setLeaderboardData(data);
+    } else {
+      console.warn("Unexpected leaderboard data format:", data);
+      setLeaderboardData([]);
+    }
+  } catch (err) {
+    console.error("Failed to fetch leaderboard from database:", err);
+    setLeaderboardData([]);
+  } finally {
+    setLoadingLeaderboard(false);
+  }
+};
 
   const handleOpenNetwork = () => {
     setNetworkOpen(true);
@@ -176,7 +198,7 @@ function Desktop() {
   const handleScoreSubmit = async () => {
     if (!playerNick.trim()) return;
     try {
-      await fetch(`${BACKEND_URL}/api/score`, {
+      await fetch('https://nexus-os-backend-wft7.onrender.com/api/score',{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

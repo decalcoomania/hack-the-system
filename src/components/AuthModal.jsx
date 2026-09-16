@@ -14,7 +14,7 @@ export const AuthModal = ({ onLoginSuccess }) => {
     const body = isRegister ? { email, password, nickname } : { email, password };
 
     try {
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
+      const res = await fetch(`https://nexus-os-backend-wft7.onrender.com${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
