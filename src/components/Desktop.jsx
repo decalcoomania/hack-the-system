@@ -197,8 +197,9 @@ function Desktop({ userNickname }) {
 
   const handleScoreSubmit = async () => {
     const nickToSave = playerNick.trim() || userNickname || "Anonymous";
+    
     try {
-      await fetch(`${BACKEND_URL}/api/score`, {
+      const res = await fetch(`${BACKEND_URL}/api/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -207,10 +208,19 @@ function Desktop({ userNickname }) {
           detection: gameState.detection,
         }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+
       setIsSubmitted(true);
-      fetchLeaderboard();
+      // Одразу перезавантажуємо лідерборд після успішного збереження
+      await fetchLeaderboard();
+      // Автоматично відкриваємо вікно Network, щоб гравець побачив себе в топі
+      setNetworkOpen(true);
     } catch (err) {
       console.error("Database save error:", err);
+      alert("Не вдалося зберегти результат. Перевірте з'єднання з сервером.");
     }
   };
 

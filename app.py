@@ -5,12 +5,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-# Дозволяємо CORS для Vercel та локального середовища
+# Повна настройка CORS для роботи з Vercel та локальним середовищем
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nexus_os.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# --- МОДЕЛІ БАЗИ ДАНИХ ---
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,9 +26,11 @@ class Leaderboard(db.Model):
     xp = db.Column(db.Integer, nullable=False)
     detection = db.Column(db.Float, nullable=False)
 
-# Створення таблиць бази даних при старті сервера
+# Створення таблиць при кожному старті застосунку (для Render / gunicorn)
 with app.app_context():
     db.create_all()
+
+# --- МАРШРУТИ АВТОРИЗАЦІЇ ---
 
 @app.route('/api/register', methods=['POST', 'OPTIONS'])
 def register():
@@ -40,10 +44,10 @@ def register():
         nickname = data.get('nickname')
 
         if not email or not password or not nickname:
-            return jsonify({'error': 'Заповніть усі поля'}), 400
+            return jsonify({'error': 'Будь ласка, заповніть усі поля'}), 400
 
         if User.query.filter_by(email=email).first():
-            return jsonify({'error': 'Користувач з такою поштою вже існує'}), 400
+            return jsonify({'error': 'Користувач із такою поштою вже існує'}), 400
 
         hashed_pw = generate_password_hash(password)
         user = User(email=email, password=hashed_pw, nickname=nickname)
@@ -53,7 +57,7 @@ def register():
         return jsonify({'message': 'Успішна реєстрація', 'nickname': nickname}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': f'Помилка сервера: {str(e)}'}), 500
+        return jsonify({'error': f'Помилка сервера при реєстрації: {str(e)}'}), 500
 
 @app.route('/api/login', methods=['POST', 'OPTIONS'])
 def login():
@@ -71,30 +75,44 @@ def login():
 
         return jsonify({'message': 'Успішний вхід', 'nickname': user.nickname}), 200
     except Exception as e:
-        return jsonify({'error': f'Помилка сервера: {str(e)}'}), 500
+        return jsonify({'error': f'Помилка сервера при вході: {str(e)}'}), 500
+
+# --- МАРШРУТИ ТАБЛИЦІ ЛІДЕРІВ ---
 
 @app.route('/api/leaderboard', methods=['GET', 'OPTIONS'])
 def get_leaderboard():
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
 
-    scores = Leaderboard.query.order_by(Leaderboard.xp.desc()).limit(20).all()
-    return jsonify([{'nickname': s.nickname, 'xp': s.xp, 'detection': s.detection} for s in scores])
+    try:
+        scores = Leaderboard.query.order_by(Leaderboard.xp.desc()).limit(20).all()
+        return jsonify([{'nickname': s.nickname, 'xp': s.xp, 'detection': s.detection} for s in scores]), 200
+    except Exception as e:
+        return jsonify({'error': f'Помилка отримання даних: {str(e)}'}), 500
 
 @app.route('/api/score', methods=['POST', 'OPTIONS'])
 def add_score():
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
 
-    data = request.get_json() or {}
-    new_entry = Leaderboard(
-        nickname=data.get('nickname', 'Anonymous'),
-        xp=data.get('xp', 0),
-        detection=data.get('detection', 0.0)
-    )
-    db.session.add(new_entry)
-    db.session.commit()
-    return jsonify({'status': 'success'}), 201
+    try:
+        data = request.get_json() or {}
+        nickname = data.get('nickname', 'Anonymous')
+        xp = int(data.get('xp', 0))
+        detection = float(data.get('detection', 0.0))
+
+        new_entry = Leaderboard(
+            nickname=nickname,
+            xp=xp,
+            detection=detection
+        )
+        db.session.add(new_entry)
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'Score saved successfully!'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Помилка збереження результату: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
