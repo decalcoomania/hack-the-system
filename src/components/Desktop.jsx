@@ -10,7 +10,7 @@ import securityImg from "../assets/security-icon.png";
 import { getInitialGameState, processCommand } from "../game/engine";
 import { soundFx } from "../game/audio";
 
-const BACKEND_URL = "https://nexus-os-backend.onrender.com";
+const BACKEND_URL = "https://nexus-os-backend-wft7.onrender.com";
 
 const NEXUS_FILES = [
   { name: "github_profile.url", label: "GitHub Repository", url: "https://github.com" },
@@ -19,7 +19,7 @@ const NEXUS_FILES = [
   { name: "gattouz_vault.url", label: "Gattouz Special Vault", url: "https://youtube.com" }
 ];
 
-function Desktop() {
+function Desktop({ userNickname }) {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [networkOpen, setNetworkOpen] = useState(false);
   const [filesOpen, setFilesOpen] = useState(false);
@@ -36,12 +36,18 @@ function Desktop() {
   });
 
   const [inputVal, setInputVal] = useState("");
-  const [playerNick, setPlayerNick] = useState("");
+  const [playerNick, setPlayerNick] = useState(userNickname || "");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
 
   const terminalEndRef = useRef(null);
+
+  useEffect(() => {
+    if (userNickname) {
+      setPlayerNick(userNickname);
+    }
+  }, [userNickname]);
 
   useEffect(() => {
     localStorage.setItem("nexus_game_state", JSON.stringify(gameState));
@@ -53,7 +59,7 @@ function Desktop() {
     }
   }, [gameState.history, terminalOpen]);
 
-  // СИСТЕМА ПІДКАЗОК (АНГЛІЙСЬКОЮ ТА ПРОСТИМИ СЛОВАМИ)
+  // СИСТЕМА ПІДКАЗОК
   const getCurrentHint = () => {
     if (!terminalOpen && !gameState.currentServer) {
       return {
@@ -119,40 +125,35 @@ function Desktop() {
     }
   };
 
-  
+  const fetchLeaderboard = async () => {
+    setLoadingLeaderboard(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/leaderboard`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-const BACKEND_URL = "https://nexus-os-backend-wft7.onrender.com";
-
-const fetchLeaderboard = async () => {
-  setLoadingLeaderboard(true);
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/leaderboard`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!res.ok) {
+        throw new Error(`Server returned status code ${res.status}`);
       }
-    });
 
-    if (!res.ok) {
-      throw new Error(`Server returned status code ${res.status}`);
-    }
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (Array.isArray(data)) {
-      setLeaderboardData(data);
-    } else {
-      console.warn("Unexpected leaderboard data format:", data);
+      if (Array.isArray(data)) {
+        setLeaderboardData(data);
+      } else {
+        console.warn("Unexpected leaderboard data format:", data);
+        setLeaderboardData([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch leaderboard from database:", err);
       setLeaderboardData([]);
+    } finally {
+      setLoadingLeaderboard(false);
     }
-  } catch (err) {
-    console.error("Failed to fetch leaderboard from database:", err);
-    setLeaderboardData([]);
-  } finally {
-    setLoadingLeaderboard(false);
-  }
-};
+  };
 
   const handleOpenNetwork = () => {
     setNetworkOpen(true);
@@ -170,10 +171,10 @@ const fetchLeaderboard = async () => {
       if (!inputVal.trim()) return;
 
       const prevDet = gameState.detection;
-      const updated = processCommand(inputVal, gameState);
+      const updated = processCommand(inputVal, gameState, userNickname);
 
       if (updated.detection > prevDet) soundFx.playAlert();
-      const lastHist = updated.history[updated.history.length - 1];
+      const lastHist = updated.history ? updated.history[updated.history.length - 1] : null;
       if (lastHist && lastHist.type === "error") soundFx.playError();
 
       if (updated.redirectUrl) {
@@ -191,18 +192,17 @@ const fetchLeaderboard = async () => {
     setGameState(freshState);
     localStorage.setItem("nexus_game_state", JSON.stringify(freshState));
     setIsSubmitted(false);
-    setPlayerNick("");
     setTerminalOpen(true);
   };
 
   const handleScoreSubmit = async () => {
-    if (!playerNick.trim()) return;
+    const nickToSave = playerNick.trim() || userNickname || "Anonymous";
     try {
-      await fetch('https://nexus-os-backend-wft7.onrender.com/api/score',{
+      await fetch(`${BACKEND_URL}/api/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nickname: playerNick,
+          nickname: nickToSave,
           xp: gameState.xp,
           detection: gameState.detection,
         }),
@@ -218,17 +218,28 @@ const fetchLeaderboard = async () => {
 
   return (
     <div
-      className={`desktop ${gameState.detection >= 80 ? "glitch-alert" : ""}`}
+      className={`desktop ${gameState.detection >= 80 ? "alert-state glitch-alert" : ""}`}
       style={{
         backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.65), rgba(10, 10, 15, 0.65)), url(${hexBg})`,
       }}
     >
+      {/* ЕКРАННИЙ ГЛЮК ПРИ ДЕТЕКШНІ >= 80% */}
+      {gameState.detection >= 80 && <div className="glitch-overlay" />}
+
       {/* TOPBAR */}
       <div className="topbar">
         <div className="topbar-left">
           <span className="os-name">NEXUS OS v2.4</span>
           <span className="divider">|</span>
           <span className="clock">04:04 AM</span>
+          {userNickname && (
+            <>
+              <span className="divider">|</span>
+              <span className="user-badge" style={{ color: '#00ff66', fontWeight: 'bold' }}>
+                OP: {userNickname}
+              </span>
+            </>
+          )}
         </div>
 
         <div className="topbar-right">
@@ -262,7 +273,7 @@ const fetchLeaderboard = async () => {
         </button>
       </div>
 
-      {/* HINT BUTTON (БЕЗ ЕМОДЗІ) */}
+      {/* HINT BUTTON */}
       <button 
         className="hint-fab-btn" 
         onClick={() => {
@@ -336,7 +347,7 @@ const fetchLeaderboard = async () => {
 
             <div className="terminal-body">
               <div className="terminal-history">
-                {gameState.history.map((item, index) => (
+                {gameState.history && gameState.history.map((item, index) => (
                   <div key={index} className={`terminal-line ${item.type}`}>
                     {item.text}
                   </div>
@@ -460,7 +471,6 @@ const fetchLeaderboard = async () => {
                       <th>AGENT</th>
                       <th>XP</th>
                       <th>DETECTION</th>
-                      <th>DATE</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -470,7 +480,6 @@ const fetchLeaderboard = async () => {
                         <td className="nick-col">{row.nickname}</td>
                         <td className="xp-col">{row.xp}</td>
                         <td className="det-col">{row.detection}%</td>
-                        <td className="date-col">{row.date}</td>
                       </tr>
                     ))}
                   </tbody>
