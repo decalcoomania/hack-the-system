@@ -119,9 +119,9 @@ function Desktop() {
     }
   };
 
-  const BACKEND_URL = 'https://nexus-os-backend-wft7.onrender.com';
+  
 
-const BACKEND_URL = 'https://nexus-os-backend-wft7.onrender.com';
+const BACKEND_URL = "https://nexus-os-backend-wft7.onrender.com";
 
 const fetchLeaderboard = async () => {
   setLoadingLeaderboard(true);
