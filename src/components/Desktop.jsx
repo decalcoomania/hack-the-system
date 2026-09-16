@@ -196,8 +196,11 @@ function Desktop({ userNickname }) {
   };
 
   const handleScoreSubmit = async () => {
+    if (isSubmitted) return;
+
     const nickToSave = playerNick.trim() || userNickname || "Anonymous";
-    
+    setIsSubmitted(true);
+
     try {
       const res = await fetch(`${BACKEND_URL}/api/score`, {
         method: "POST",
@@ -213,14 +216,12 @@ function Desktop({ userNickname }) {
         throw new Error(`Server error: ${res.status}`);
       }
 
-      setIsSubmitted(true);
-      // Одразу перезавантажуємо лідерборд після успішного збереження
       await fetchLeaderboard();
-      // Автоматично відкриваємо вікно Network, щоб гравець побачив себе в топі
       setNetworkOpen(true);
     } catch (err) {
       console.error("Database save error:", err);
-      alert("Не вдалося зберегти результат. Перевірте з'єднання з сервером.");
+      setIsSubmitted(false);
+      alert("Не вдалося зберегти результат.");
     }
   };
 
@@ -520,7 +521,13 @@ function Desktop({ userNickname }) {
                         value={playerNick}
                         onChange={(e) => setPlayerNick(e.target.value)}
                       />
-                      <button className="submit-btn" onClick={handleScoreSubmit}>SAVE</button>
+                      <button 
+                        className="submit-btn" 
+                        onClick={handleScoreSubmit}
+                        disabled={isSubmitted}
+                      >
+                        {isSubmitted ? "SAVING..." : "SAVE"}
+                      </button>
                     </div>
                   ) : (
                     <p className="success-text">SCORE SAVED TO NETWORK!</p>

@@ -97,19 +97,33 @@ def add_score():
 
     try:
         data = request.get_json() or {}
-        nickname = data.get('nickname', 'Anonymous')
+        nickname = data.get('nickname', 'Anonymous').strip()
         xp = int(data.get('xp', 0))
         detection = float(data.get('detection', 0.0))
 
-        new_entry = Leaderboard(
-            nickname=nickname,
-            xp=xp,
-            detection=detection
-        )
-        db.session.add(new_entry)
-        db.session.commit()
+        if not nickname:
+            nickname = 'Anonymous'
 
+        # Шукаємо, чи існує гравець з таким нікнеймом
+        existing_entry = Leaderboard.query.filter_by(nickname=nickname).first()
+
+        if existing_entry:
+            # Оновлюємо результат, якщо новий XP більший або рівний
+            if xp >= existing_entry.xp:
+                existing_entry.xp = xp
+                existing_entry.detection = detection
+        else:
+            # Якщо гравця немає в таблиці — створюємо один запис
+            new_entry = Leaderboard(
+                nickname=nickname,
+                xp=xp,
+                detection=detection
+            )
+            db.session.add(new_entry)
+
+        db.session.commit()
         return jsonify({'status': 'success', 'message': 'Score saved successfully!'}), 201
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': f'Помилка збереження результату: {str(e)}'}), 500
