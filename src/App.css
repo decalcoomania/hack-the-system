@@ -480,3 +480,119 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #2ee59d #0a0a0d;
 }
+
+/* ==========================================
+   NEXUS OS // AUTHENTICATION MODAL STYLES
+   ========================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(4, 8, 12, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.auth-box {
+  background: #080d12;
+  border: 1px solid #00ff66;
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.25), inset 0 0 15px rgba(0, 255, 102, 0.08);
+  padding: 35px 30px;
+  border-radius: 4px;
+  color: #00ff66;
+  width: 340px;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  text-align: center;
+}
+
+.auth-title {
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+  border-bottom: 1px solid rgba(0, 255, 102, 0.3);
+  padding-bottom: 12px;
+  font-weight: bold;
+}
+
+.auth-error {
+  background: rgba(255, 51, 51, 0.15);
+  border: 1px solid #ff3333;
+  color: #ff5555;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  border-radius: 3px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-input {
+  background: #0c141c;
+  border: 1px solid #1c3b28;
+  color: #00ff66;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border-radius: 3px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.auth-input::placeholder {
+  color: #007733;
+}
+
+.auth-input:focus {
+  border-color: #00ff66;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+  background: #101b26;
+}
+
+.auth-submit-btn {
+  background: #00ff66;
+  color: #050a0f;
+  border: none;
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.auth-submit-btn:hover {
+  background: #33ff88;
+  box-shadow: 0 0 18px rgba(0, 255, 102, 0.8);
+  transform: translateY(-1px);
+}
+
+.auth-toggle-btn {
+  background: transparent;
+  border: none;
+  color: #008844;
+  margin-top: 16px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-family: inherit;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.auth-toggle-btn:hover {
+  color: #00ff66;
+}
