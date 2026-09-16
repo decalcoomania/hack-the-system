@@ -1,53 +1,86 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///leaderboard.db'
+# Дозволяємо CORS для всіх доменів, методів та заголовків (включаючи OPTIONS)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nexus_os.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    nickname = db.Column(db.String(50), nullable=False)
 
 class Leaderboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(50), nullable=False)
     xp = db.Column(db.Integer, nullable=False)
-    detection = db.Column(db.Integer, nullable=False)
-    completed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    detection = db.Column(db.Float, nullable=False)
 
-with app.app_context():
-    db.create_all()
+@app.route('/api/register', methods=['POST', 'OPTIONS'])
+def register():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
+    data = request.get_json() or {}
+    email = data.get('email')
+    password = data.get('password')
+    nickname = data.get('nickname')
+
+    if not email or not password or not nickname:
+        return jsonify({'error': 'Заповніть усі поля'}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({'error': 'Користувач з такою поштою вже існує'}), 400
+
+    hashed_pw = generate_password_hash(password)
+    user = User(email=email, password=hashed_pw, nickname=nickname)
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({'message': 'Успішна реєстрація', 'nickname': nickname}), 201
+
+
+@app.route('/api/login', methods=['POST', 'OPTIONS'])
+def login():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
+    data = request.get_json() or {}
+    email = data.get('email')
+    password = data.get('password')
+
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({'error': 'Невірний email або пароль'}), 401
+
+    return jsonify({'message': 'Успішний вхід', 'nickname': user.nickname}), 200
 
 @app.route('/api/leaderboard', methods=['GET'])
 def get_leaderboard():
-    scores = Leaderboard.query.order_by(Leaderboard.xp.desc(), Leaderboard.detection.asc()).limit(20).all()
-    result = []
-    for score in scores:
-        result.append({
-            "id": score.id,
-            "nickname": score.nickname,
-            "xp": score.xp,
-            "detection": score.detection,
-            "date": score.completed_at.strftime("%Y-%m-%d %H:%M")
-        })
-    return jsonify(result)
+    scores = Leaderboard.query.order_by(Leaderboard.xp.desc()).limit(20).all()
+    return jsonify([{'nickname': s.nickname, 'xp': s.xp, 'detection': s.detection} for s in scores])
 
 @app.route('/api/score', methods=['POST'])
-def save_score():
-    data = request.json
-    nickname = data.get('nickname', 'Agent_Unknown')
-    xp = data.get('xp', 0)
-    detection = data.get('detection', 0)
-
-    new_score = Leaderboard(nickname=nickname, xp=xp, detection=detection)
-    db.session.add(new_score)
+def add_score():
+    data = request.get_json()
+    new_entry = Leaderboard(
+        nickname=data.get('nickname', 'Anonymous'),
+        xp=data.get('xp', 0),
+        detection=data.get('detection', 0.0)
+    )
+    db.session.add(new_entry)
     db.session.commit()
-
-    return jsonify({"status": "success"})
+    return jsonify({'status': 'success'}), 201
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    with app.app_context():
+        db.create_all()
+    app.run(host='0.0.0.0', port=5000)
